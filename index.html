@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce de Discos</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #1a1a1a;
+            color: #fff;
+            padding: 0;
+            text-align: center;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+        .navbar h1 {
+            margin: 0;
+            flex-grow: 1;
+            font-family: 'Pacifico', cursive;
+            color: #ff4081;
+        }
+        .navbar-buttons {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        .cart-icon, .admin-button {
+            margin-left: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #fff;
+        }
+        .admin-button {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .banner {
+            height: 250px;
+            background-image: url('https://images.unsplash.com/photo-1483412033650-1015ddeb83d1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            margin-top: 60px;
+        }
+        .search-bar {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .search-bar input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+        }
+        .search-bar button {
+            padding: 10px 15px;
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+        .sub-nav {
+            background-color: #333;
+            padding: 10px 0;
+        }
+        .sub-nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0 0 0 30px;
+        }
+        .sub-nav li {
+            display: inline;
+            margin-right: 20px;
+            color: #fff;
+        }
+        .main-content {
+            margin: 30px auto 0;
+            max-width: 1200px;
+            padding: 0 50px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .footer {
+            background-color: #1a1a1a;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+        .product-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .add-to-cart {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .add-to-cart:hover {
+            background-color: #e91e63;
+        }
+        .admin-panel {
+            display: none;
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .admin-panel h2 {
+            margin-top: 0;
+            color: #ff4081;
+        }
+        .admin-panel input, .admin-panel button {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .cart-count {
+            position: absolute;
+            top: 0;
+            right: -5px;
+            background-color: #ff4081;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+        .cart-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .cart-popup h2 {
+            margin-top: 0;
+            color: #ff4081;
+        }
+        .cart-popup ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .cart-popup li {
+            margin-bottom: 10px;
+        }
+        .cart-popup button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .detalles {
+            margin-top: 10px;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            background-color: #f5f5f5;
+            border-radius: 0 0 5px 5px;
+        }
+        .toggle-details {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .toggle-details:hover {
+            background-color: #e91e63;
+        }
+        .mostrar-filtros {
+            background-color: #1a1a1a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            font-size: 16px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .mostrar-filtros:hover {
+            background-color: #333;
+        }
+        .mostrar-filtros i {
+            margin-right: 8px;
+        }
+        #filtros-busqueda {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+        }
+        #filtros-busqueda.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        #filtros-busqueda input,
+        #filtros-busqueda select,
+        #filtros-busqueda button {
+            margin: 5px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        #filtros-busqueda button {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #filtros-busqueda button:hover {
+            background-color: #e91e63;
+        }
+        .product-card audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .product-card input[type="text"] {
+            width: calc(100% - 16px);
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .product-card button {
+            margin-top: 5px;
+        }
+        .reseñas-carrusel {
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .reseñas-carrusel h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ff4081;
+        }
+        .carrusel-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+            height: 200px; /* Ajusta esta altura según el contenido de tus reseñas */
+        }
+        .carrusel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            padding: 20px;
+            text-align: center;
+        }
+        .carrusel-slide.active {
+            opacity: 1;
+        }
+        .carrusel-slide.next {
+            opacity: 0;
+        }
+        .carrusel-slide blockquote {
+            font-style: italic;
+            font-size: 1.1em;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .carrusel-slide footer {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #ff4081;
+        }
+        .carrusel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            z-index: 10;
+        }
+        .carrusel-button:hover {
+            background-color: #e91e63;
+            transform: translateY(-50%) scale(1.1);
+        }
+        .prev {
+            left: 10px;
+        }
+        .next {
+            right: 10px;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 5px;
+            transform: scale(0.7);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .popup.show {
+            opacity: 1;
+        }
+
+        .popup.show .popup-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .popup-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .popup-imagen img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+        }
+
+        .popup-info h3 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #ff4081;
+        }
+
+        #popup-input-resena {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+
+        .popup-info button {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .popup-info button:hover {
+            background-color: #e91e63;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Musicland</h1>
+        <div class="navbar-buttons">
+            <button id="admin-login" class="admin-button"><i class="fas fa-user-cog"></i> Admin</button>
+            <div class="cart-icon" id="cart-icon" style="position: relative;" onclick="mostrarCarrito()">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" id="cart-count">0</span>
+            </div>
+        </div>
+    </nav>
+    <div class="banner">
+        <button class="mostrar-filtros" onclick="mostrarFiltrosBusqueda()">
+            <i class="fas fa-search"></i> Buscar
+        </button>
+        <div id="filtros-busqueda" style="display: none;">
+            <input type="text" id="buscar-texto" placeholder="Buscar discos...">
+            <select id="filtro-genero">
+                <option value="">Todos los géneros</option>
+                <option value="Rock">Rock</option>
+                <option value="Pop">Pop</option>
+                <option value="Jazz">Jazz</option>
+                <option value="Electrónica">Electrónica</option>
+            </select>
+            <input type="number" id="filtro-precio-min" placeholder="Precio mínimo">
+            <input type="number" id="filtro-precio-max" placeholder="Precio máximo">
+            <button onclick="buscarDiscos()">Buscar</button>
+        </div>
+    </div>
+    <nav class="sub-nav">
+        <ul>
+            <li><i class="fas fa-home"></i> Inicio</li>
+            <li><i class="fas fa-compact-disc"></i> Catálogo</li>
+            <li><i class="fas fa-tag"></i> Ofertas</li>
+            <li><i class="fas fa-star"></i> Novedades</li>
+            <li><i class="fas fa-envelope"></i> Contacto</li>
+        </ul>
+    </nav>
+    <main class="main-content">
+        <section class="reseñas-carrusel">
+            <h2>Reseñas destacadas</h2>
+            <div class="carrusel-container">
+                <button class="carrusel-button prev" onclick="moverCarrusel(-1)">&#10094;</button>
+                <div class="carrusel-slide">
+                    <blockquote>
+                        <p>"21 de Adele es un álbum impresionante. Su voz es simplemente increíble."</p>
+                        <footer>- Juan Pérez, sobre <cite>21 - Adele</cite></footer>
+                    </blockquote>
+                </div>
+                <div class="carrusel-slide">
+                    <blockquote>
+                        <p>"Back to Black es un clásico moderno. Amy Winehouse era una artista única."</p>
+                        <footer>- María García, sobre <cite>Back to Black - Amy Winehouse</cite></footer>
+                    </blockquote>
+                </div>
+                <div class="carrusel-slide">
+                    <blockquote>
+                        <p>"To Pimp a Butterfly es una obra maestra del hip hop contemporáneo."</p>
+                        <footer>- Carlos Rodríguez, sobre <cite>To Pimp a Butterfly - Kendrick Lamar</cite></footer>
+                    </blockquote>
+                </div>
+                <button class="carrusel-button next" onclick="moverCarrusel(1)">&#10095;</button>
+            </div>
+        </section>
+        <div id="admin-panel" class="admin-panel">
+            <h2>Panel de Administrador</h2>
+            <h3>Agregar Disco</h3>
+            <input type="text" id="nuevo-nombre" placeholder="Nombre del Disco">
+            <input type="text" id="nuevo-tipo" placeholder="Tipo (CD/Vinilo)">
+            <input type="number" id="nuevo-precio" placeholder="Precio">
+            <input type="text" id="nueva-imagen" placeholder="URL de la imagen">
+            <button onclick="agregarDisco()">Agregar Disco</button>
+            <h3>Eliminar Disco</h3>
+            <input type="number" id="eliminar-id" placeholder="ID del Disco">
+            <button onclick="eliminarDisco()">Eliminar Disco</button>
+        </div>
+        <div id="product-grid" class="product-grid">
+            <!-- Las tarjetas de producto se generarán dinámicamente aquí -->
+        </div>
+    </main>
+    <footer class="footer">
+        Todos los derechos reservados
+    </footer>
+
+    <div id="cart-popup" class="cart-popup">
+        <h2>Carrito de Compras</h2>
+        <ul id="cart-items"></ul>
+        <p>Total: $<span id="cart-total">0.00</span></p>
+        <button onclick="cerrarCarrito()">Seguir Comprando</button>
+        <button onclick="finalizarCompra()">Finalizar Compra</button>
+    </div>
+
+    <!-- Añade esto al final de tu body -->
+    <div id="detalles-popup" class="popup">
+        <div class="popup-content">
+            <span class="close">&times;</span>
+            <h2 id="popup-titulo"></h2>
+            <div class="popup-grid">
+                <div class="popup-imagen">
+                    <img id="popup-imagen" src="" alt="Imagen del artista">
+                </div>
+                <div class="popup-info">
+                    <h3>Reseña de la página</h3>
+                    <p id="popup-resena"></p>
+                    <h3>Sample musical</h3>
+                    <audio id="popup-audio" controls>
+                        Tu navegador no soporta el elemento de audio.
+                    </audio>
+                    <h3>Deja tu reseña</h3>
+                    <textarea id="popup-input-resena" placeholder="Escribe tu reseña aquí"></textarea>
+                    <button onclick="enviarResena()">Enviar reseña</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let productos = [];
+
+        // Cargar los productos de forma asíncrona
+        fetch('productos.json')
+            .then(response => response.json())
+            .then(data => {
+                productos = data;
+                generarTarjetasProducto();
+            })
+            .catch(error => console.error('Error al cargar los productos:', error));
+
+        let carrito = [];
+
+        // Función para generar las tarjetas de producto
+        function generarTarjetasProducto(productosAMostrar = productos) {
+            const productGrid = document.getElementById('product-grid');
+            productGrid.innerHTML = '';
+            productosAMostrar.forEach(producto => {
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'product-card';
+                tarjeta.innerHTML = `
+                    <img src="${producto.imagen}" alt="${producto.nombre}" class="product-image" onerror="this.src='https://via.placeholder.com/200x200?text=Imagen+no+disponible'">
+                    <p>${producto.tipo} - ${producto.genero}</p>
+                    <h3>${producto.nombre}</h3>
+                    <p>$${producto.precio.toFixed(2)}</p>
+                    <button class="add-to-cart" onclick="agregarAlCarrito(${producto.id})">Agregar al carrito</button>
+                    <button class="toggle-details" onclick="mostrarDetalles(${producto.id}, event)">Más detalles</button>
+                `;
+                productGrid.appendChild(tarjeta);
+            });
+        }
+
+        function mostrarDetalles(productoId, event) {
+            const popup = document.getElementById('detalles-popup');
+            const popupContent = popup.querySelector('.popup-content');
+            const titulo = document.getElementById('popup-titulo');
+            const imagen = document.getElementById('popup-imagen');
+            const resena = document.getElementById('popup-resena');
+            const audio = document.getElementById('popup-audio');
+            
+            const producto = productos.find(p => p.id === productoId);
+            
+            titulo.textContent = producto.nombre;
+            imagen.src = producto.imagenArtista || producto.imagen;
+            resena.textContent = producto.resena || "No hay reseña disponible.";
+            audio.src = producto.audioSample;
+            
+            // Obtener la posición del botón
+            const rect = event.target.getBoundingClientRect();
+            const buttonX = rect.left + rect.width / 2;
+            const buttonY = rect.top + rect.height / 2;
+            
+            // Establecer el punto de origen de la animación
+            popupContent.style.transformOrigin = `${buttonX}px ${buttonY}px`;
+            
+            // Mostrar el popup
+            popup.style.display = 'block';
+            
+            // Forzar un reflow para que la transición funcione
+            void popup.offsetWidth;
+            
+            // Añadir la clase para iniciar la animación
+            popup.classList.add('show');
+        }
+
+        function enviarResena() {
+            const resena = document.getElementById('popup-input-resena').value;
+            if (resena) {
+                alert('Reseña enviada: ' + resena);
+                document.getElementById('popup-input-resena').value = '';
+            } else {
+                alert('Por favor, escribe una reseña antes de enviar.');
+            }
+        }
+
+        // Cerrar el popup
+        document.querySelector('.close').onclick = function() {
+            const popup = document.getElementById('detalles-popup');
+            popup.classList.remove('show');
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 300); // Esperar a que termine la animación
+        }
+
+        // Cerrar el popup si se hace clic fuera de él
+        window.onclick = function(event) {
+            const popup = document.getElementById('detalles-popup');
+            if (event.target == popup) {
+                popup.classList.remove('show');
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                }, 300); // Esperar a que termine la animación
+            }
+        }
+
+        // Función para mostrar/ocultar el panel de administrador
+        function toggleAdminPanel() {
+            const adminPanel = document.getElementById('admin-panel');
+            adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Función para agregar un nuevo disco
+        function agregarDisco() {
+            const nombre = document.getElementById('nuevo-nombre').value;
+            const tipo = document.getElementById('nuevo-tipo').value;
+            const precio = parseFloat(document.getElementById('nuevo-precio').value);
+            const imagen = document.getElementById('nueva-imagen').value;
+            
+            if (nombre && tipo && precio && imagen) {
+                const nuevoId = productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1;
+                productos.push({ id: nuevoId, nombre, tipo, precio, imagen });
+                generarTarjetasProducto();
+                alert('Disco agregado con éxito');
+            } else {
+                alert('Por favor, complete todos los campos');
+            }
+        }
+
+        // Función para eliminar un disco
+        function eliminarDisco() {
+            const id = parseInt(document.getElementById('eliminar-id').value);
+            const index = productos.findIndex(p => p.id === id);
+            if (index !== -1) {
+                productos.splice(index, 1);
+                generarTarjetasProducto();
+                alert('Disco eliminado con éxito');
+            } else {
+                alert('No se encontró un disco con ese ID');
+            }
+        }
+
+        // Evento para mostrar el panel de administrador
+        document.getElementById('admin-login').addEventListener('click', () => {
+            // Cuando se hace clic en el botón de administrador, se solicita una contraseña
+            const password = prompt('Ingrese la contraseña de administrador:');
+            // Se verifica si la contraseña ingresada es correcta
+            if (password === 'admin123') { // Contraseña de ejemplo
+                // Si la contraseña es correcta, se muestra u oculta el panel de administrador
+                toggleAdminPanel();
+            } else {
+                // Si la contraseña es incorrecta, se muestra un mensaje de error
+                alert('Contraseña incorrecta');
+            }
+        });
+
+        // Mover la función de búsqueda fuera de las tarjetas
+        function mostrarFiltrosBusqueda() {
+            const filtrosDiv = document.getElementById('filtros-busqueda');
+            if (filtrosDiv.classList.contains('visible')) {
+                filtrosDiv.classList.remove('visible');
+                setTimeout(() => filtrosDiv.style.display = 'none', 300);
+            } else {
+                filtrosDiv.style.display = 'block';
+                setTimeout(() => filtrosDiv.classList.add('visible'), 10);
+            }
+        }
+
+        // Función para buscar discos
+        function buscarDiscos() {
+            const textoBusqueda = document.getElementById('buscar-texto').value.toLowerCase();
+            const generoSeleccionado = document.getElementById('filtro-genero').value;
+            const precioMin = parseFloat(document.getElementById('filtro-precio-min').value) || 0;
+            const precioMax = parseFloat(document.getElementById('filtro-precio-max').value) || Infinity;
+
+            const productosFiltrados = productos.filter(producto => 
+                producto.nombre.toLowerCase().includes(textoBusqueda) &&
+                (generoSeleccionado === "" || producto.genero === generoSeleccionado) &&
+                producto.precio >= precioMin && producto.precio <= precioMax
+            );
+
+            generarTarjetasProducto(productosFiltrados);
+        }
+
+        // Función para agregar reseña
+        function agregarResena(productoId) {
+            const textoResena = document.getElementById(`review-text-${productoId}`).value;
+            if (textoResena) {
+                const listaResenas = document.getElementById(`reviews-${productoId}`);
+                const nuevaResena = document.createElement('li');
+                nuevaResena.textContent = textoResena;
+                listaResenas.appendChild(nuevaResena);
+                document.getElementById(`review-text-${productoId}`).value = '';
+            }
+        }
+
+        // Función para agregar un producto al carrito
+        function agregarAlCarrito(id) {
+            const producto = productos.find(p => p.id === id);
+            if (producto) {
+                carrito.push(producto);
+                actualizarContadorCarrito();
+            }
+        }
+
+        // Función para actualizar el contador del carrito
+        function actualizarContadorCarrito() {
+            const cartCount = document.getElementById('cart-count');
+            cartCount.textContent = carrito.length;
+        }
+
+        // Función para mostrar el carrito
+        function mostrarCarrito() {
+            const cartPopup = document.getElementById('cart-popup');
+            cartPopup.style.display = 'block';
+            actualizarCarrito();
+        }
+
+        // Función para cerrar el carrito
+        function cerrarCarrito() {
+            const cartPopup = document.getElementById('cart-popup');
+            cartPopup.style.display = 'none';
+        }
+
+        // Función para finalizar la compra
+        function finalizarCompra() {
+            alert('Compra finalizada');
+            carrito = [];
+            actualizarContadorCarrito();
+            cerrarCarrito();
+        }
+
+        // Función para actualizar el contenido del carrito
+        function actualizarCarrito() {
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            cartItems.innerHTML = '';
+            let total = 0;
+
+            carrito.forEach(producto => {
+                const li = document.createElement('li');
+                li.textContent = `${producto.nombre} - $${producto.precio.toFixed(2)}`;
+                cartItems.appendChild(li);
+                total += producto.precio;
+            });
+
+            cartTotal.textContent = total.toFixed(2);
+        }
+
+        let slideIndex = 0;
+        const slides = document.getElementsByClassName("carrusel-slide");
+
+        function mostrarSlide(n) {
+            let siguiente = (n + 1) % slides.length;
+            
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].classList.remove('active');
+                slides[i].classList.remove('next');
+            }
+            
+            slides[n].classList.add('active');
+            slides[siguiente].classList.add('next');
+            
+            setTimeout(() => {
+                slides[siguiente].classList.remove('next');
+            }, 500);
+        }
+
+        function moverCarrusel(n) {
+            slideIndex += n;
+            if (slideIndex >= slides.length) {slideIndex = 0}
+            if (slideIndex < 0) {slideIndex = slides.length - 1}
+            mostrarSlide(slideIndex);
+        }
+
+        // Mostrar el primer slide al cargar la página
+        window.onload = function() {
+            generarTarjetasProducto();
+            actualizarContadorCarrito();
+            mostrarSlide(0);
+        };
+
+        // Cambiar slide automáticamente cada 7 segundos
+        setInterval(() => moverCarrusel(1), 7000);
+    </script>
+</body>
+</html>
