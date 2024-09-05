@@ -582,7 +582,17 @@
 
         // Cargar los productos de forma asíncrona
         fetch('data/productos.json')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                console.log('Content-Type:', response.headers.get('Content-Type'));
+                return response.text();
+            })
+            .then(text => {
+                console.log('Respuesta del servidor:', text);
+                return JSON.parse(text);
+            })
             .then(data => {
                 productos = data;
                 generarTarjetasProducto();
