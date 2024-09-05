@@ -581,7 +581,7 @@
         let productos = [];
 
         // Cargar los productos de forma asíncrona
-        fetch('data/productos.json')
+        fetch('data/productos.JSON')
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
